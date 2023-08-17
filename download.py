@@ -69,8 +69,7 @@ def main(args):
         vid_dir_t = os.path.join(video_dir, page_dir)
         pdf = df[df["page_dir"] == page_dir]
         if len(pdf) > 0:
-            if not os.path.exists(vid_dir_t):
-                os.makedirs(vid_dir_t)
+            os.makedirs(vid_dir_t, exist_ok=True)
 
             urls_todo = []
             save_fps = []
