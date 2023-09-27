@@ -83,10 +83,9 @@ def main(args):
             for idx, row in pdf.iterrows():
                 video_fp = os.path.join(vid_dir_t, str(row["videoid"]) + ".mp4")
                 frame_fp = os.path.join(frame_dir_t, str(row["videoid"]), "%06d.jpg")
-                if not os.path.isfile(video_fp):
-                    urls_todo.append(row["contentUrl"])
-                    video_save_paths.append(video_fp)
-                    frames_save_paths.append(frame_fp)
+                urls_todo.append(row["contentUrl"])
+                video_save_paths.append(video_fp)
+                frames_save_paths.append(frame_fp)
 
             print(f"Spawning {len(urls_todo)} jobs for page {page_dir}")
             with concurrent.futures.ThreadPoolExecutor(max_workers=args.processes) as executor:
