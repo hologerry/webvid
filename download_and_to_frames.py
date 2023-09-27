@@ -26,7 +26,7 @@ def request_save(url, video_save_path, frame_save_path):
 def main(args):
     ### preproc
     video_dir = os.path.join(args.data_dir, "videos")
-    frames_dir = os.path.join(args.data_dir, "frames")
+    frames_dir = os.path.join(args.frames_tmp_data_dir, "frames")
     os.makedirs(video_dir, exist_ok=True)
 
     # COMM.barrier()
@@ -108,6 +108,7 @@ if __name__ == "__main__":
         "--part", type=int, required=True, help="Partition number to download where 0 <= part < partitions"
     )
     parser.add_argument("--data_dir", type=str, default="./data", help="Directory where webvid data is stored.")
+    parser.add_argument("--frames_tmp_data_dir", type=str, default="./data", help="Directory where webvid data is stored.")
     parser.add_argument("--csv_path", type=str, default="results_2M_train.csv", help="Path to csv data to download")
     parser.add_argument("--processes", type=int, default=8)
     args = parser.parse_args()
