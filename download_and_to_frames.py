@@ -10,7 +10,7 @@ import requests
 
 def video_to_frames(video_path, frame_path):
     os.makedirs(os.path.dirname(frame_path), exist_ok=True)
-    os.system(f"ffmpeg -i {video_path} -q:v 1 {frame_path}")
+    os.system(f"ffmpeg -y -i {video_path} -hide_banner -loglevel error -q:v 1 {frame_path}")
 
 
 def request_save(url, video_save_path, frame_save_path):
