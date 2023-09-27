@@ -7,6 +7,8 @@ import numpy as np
 import pandas as pd
 import requests
 
+from tqdm import tqdm
+
 
 def video_to_frames(video_path, frame_path):
     os.makedirs(os.path.dirname(frame_path), exist_ok=True)
@@ -65,7 +67,9 @@ def main(args):
 
     playlists_to_dl = np.sort(df["page_dir"].unique())
 
-    for page_dir in playlists_to_dl:
+    desc = f"Part {args.part} of {args.partitions}"
+
+    for page_dir in tqdm(playlists_to_dl, desc=desc):
         vid_dir_t = os.path.join(video_dir, page_dir)
         frame_dir_t = os.path.join(frames_dir, page_dir)
         pdf = df[df["page_dir"] == page_dir]
