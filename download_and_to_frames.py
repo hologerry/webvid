@@ -8,23 +8,23 @@ import pandas as pd
 import requests
 
 
-# from mpi4py import MPI
+def video_to_frames(video_path, frame_path):
+    os.makedirs(os.path.dirname(frame_path), exist_ok=True)
+    os.system(f"ffmpeg -i {video_path} -q:v 1 {frame_path}")
 
 
-# COMM = MPI.COMM_WORLD
-# RANK = COMM.Get_rank()
-# SIZE = COMM.Get_size()
-
-
-def request_save(url, save_path):
+def request_save(url, video_save_path, frame_save_path):
     img_data = requests.get(url, timeout=5).content
-    with open(save_path, "wb") as handler:
+    with open(video_save_path, "wb") as handler:
         handler.write(img_data)
+
+    video_to_frames(video_save_path, frame_save_path)
 
 
 def main(args):
     ### preproc
     video_dir = os.path.join(args.data_dir, "videos")
+    frames_dir = os.path.join(args.data_dir, "frames")
     os.makedirs(video_dir, exist_ok=True)
 
     # COMM.barrier()
@@ -67,23 +67,30 @@ def main(args):
 
     for page_dir in playlists_to_dl:
         vid_dir_t = os.path.join(video_dir, page_dir)
+        frame_dir_t = os.path.join(frames_dir, page_dir)
         pdf = df[df["page_dir"] == page_dir]
         if len(pdf) > 0:
             os.makedirs(vid_dir_t, exist_ok=True)
 
             urls_todo = []
-            save_paths = []
+            video_save_paths = []
+            frames_save_paths = []
 
             for idx, row in pdf.iterrows():
-                video_out_path = os.path.join(vid_dir_t, str(row["videoid"]) + ".mp4")
-                if not os.path.isfile(video_out_path):
+                video_fp = os.path.join(vid_dir_t, str(row["videoid"]) + ".mp4")
+                frame_fp = os.path.join(frame_dir_t, str(row["videoid"]), "%06d.jpg")
+                if not os.path.isfile(video_fp):
                     urls_todo.append(row["contentUrl"])
-                    save_paths.append(video_out_path)
+                    video_save_paths.append(video_fp)
+                    frames_save_paths.append(frame_fp)
 
             print(f"Spawning {len(urls_todo)} jobs for page {page_dir}")
             with concurrent.futures.ThreadPoolExecutor(max_workers=args.processes) as executor:
-                future_to_url = {executor.submit(request_save, url, fp) for url, fp in zip(urls_todo, save_paths)}
-            # request_save(urls_todo[0], save_paths[0])
+                future_to_url = {
+                    executor.submit(request_save, url, vid_fp, frame_fp)
+                    for url, vid_fp, frame_fp in zip(urls_todo, video_save_paths, frames_save_paths)
+                }
+            # request_save(urls_todo[0], video_save_paths[0])
 
 
 if __name__ == "__main__":
