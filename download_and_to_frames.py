@@ -16,7 +16,7 @@ def video_to_frames(video_path, frame_path):
 
 
 def request_save(url, video_save_path, frame_save_path):
-    img_data = requests.get(url, timeout=5).content
+    img_data = requests.get(url, timeout=30).content
     with open(video_save_path, "wb") as handler:
         handler.write(img_data)
 
