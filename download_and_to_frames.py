@@ -20,7 +20,7 @@ def request_save(url, video_save_path, frame_save_path):
     with open(video_save_path, "wb") as handler:
         handler.write(img_data)
 
-    video_to_frames(video_save_path, frame_save_path)
+    # video_to_frames(video_save_path, frame_save_path)
 
 
 def main(args):
@@ -83,6 +83,7 @@ def main(args):
             for idx, row in pdf.iterrows():
                 video_fp = os.path.join(vid_dir_t, str(row["videoid"]) + ".mp4")
                 frame_fp = os.path.join(frame_dir_t, str(row["videoid"]), "%06d.jpg")
+                os.makedirs(os.path.dirname(frame_fp), exist_ok=True)
                 urls_todo.append(row["contentUrl"])
                 video_save_paths.append(video_fp)
                 frames_save_paths.append(frame_fp)
